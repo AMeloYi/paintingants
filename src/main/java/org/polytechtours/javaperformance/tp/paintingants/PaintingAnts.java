@@ -26,7 +26,7 @@ public class PaintingAnts extends java.applet.Applet implements Runnable {
   private Vector<CFourmi> mColonie = new Vector<CFourmi>();
   private CColonie mColony;
 
-  private Thread mApplis, mThreadColony;
+  private Thread mApplis;
 
   private Dimension mDimension;
   private long mCompteur = 0;
@@ -47,9 +47,7 @@ public class PaintingAnts extends java.applet.Applet implements Runnable {
    *
    */
   public void compteur() {
-    synchronized (mMutexCompteur) {
       mCompteur++;
-    }
   }
 
   /****************************************************************************/
@@ -99,7 +97,7 @@ public class PaintingAnts extends java.applet.Applet implements Runnable {
     return mPause;
   }
 
-  public synchronized void IncrementFpsCounter() {
+  public void IncrementFpsCounter() {
     fpsCounter++;
   }
 
@@ -464,22 +462,18 @@ public class PaintingAnts extends java.applet.Applet implements Runnable {
      * ((CFourmi)mColonie.elementAt(i)).start(); }
      */
 
-    mThreadColony.start();
-
     while (mApplis == currentThread) {
+    	mColony.run();
+    	
       if (mPause) {
         lMessage = "pause";
       } else {
-        synchronized (this) {
           lMessage = "running (" + lastFps + ") ";
-        }
 
-        synchronized (mMutexCompteur) {
           mCompteur %= 10000;
           for (i = 0; i < mCompteur / 1000; i++) {
             lMessage += ".";
           }
-        }
 
       }
       showStatus(lMessage);
@@ -501,8 +495,6 @@ public class PaintingAnts extends java.applet.Applet implements Runnable {
   public void start() {
     // System.out.println(this.getName()+ ":start()");
     mColony = new CColonie(mColonie, this);
-    mThreadColony = new Thread(mColony);
-    mThreadColony.setPriority(Thread.MIN_PRIORITY);
 
     fpsTimer = new Timer(1000, new ActionListener() {
       @Override
@@ -532,21 +524,13 @@ public class PaintingAnts extends java.applet.Applet implements Runnable {
 
     fpsTimer.stop();
 
-    // On demande au Thread Colony de s'arreter et on attend qu'il s'arrete
-    mColony.pleaseStop();
-    try {
-      mThreadColony.join();
-    } catch (Exception e) {
-    }
-
-    mThreadColony = null;
     mApplis = null;
   }
 
   /**
    * update Fourmis per second
    */
-  private synchronized void updateFPS() {
+  private void updateFPS() {
     lastFps = fpsCounter;
     fpsCounter = 0L;
   }

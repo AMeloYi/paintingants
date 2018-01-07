@@ -73,13 +73,11 @@ public class CPainting extends Canvas implements MouseListener {
 
     // initialisation de la matrice des couleurs
     mCouleurs = new int[mDimension.width][mDimension.height];
-    synchronized (mMutexCouleurs) {
       for (i = 0; i != mDimension.width; i++) {
         for (j = 0; j != mDimension.height; j++) {
           mCouleurs[i][j] = mCouleurFond;
         }
       }
-    }
     
     for (i = 0; i < 256; i++) {
         for (j = 0; j < 256; j++) {
@@ -96,9 +94,7 @@ public class CPainting extends Canvas implements MouseListener {
    * d'une case
    ******************************************************************************/
   public int getCouleur(int x, int y) {
-    synchronized (mMutexCouleurs) {
       return mCouleurs[x][y];
-    }
   }
 
   /******************************************************************************
@@ -132,7 +128,6 @@ public class CPainting extends Canvas implements MouseListener {
   public void init() {
     int i, j;
     mGraphics = getGraphics();
-    synchronized (mMutexCouleurs) {
       mGraphics.clearRect(0, 0, mDimension.width, mDimension.height);
 
       // initialisation de la matrice des couleurs
@@ -142,7 +137,6 @@ public class CPainting extends Canvas implements MouseListener {
           mCouleurs[i][j] = mCouleurFond;
         }
       }
-    }
 
     // initialisation de la matrice de convolution : lissage moyen sur 9
     // cases
@@ -303,7 +297,6 @@ public class CPainting extends Canvas implements MouseListener {
   public void paint(Graphics pGraphics) {
     int i, j;
     int R, G, B;
-    synchronized (mMutexCouleurs) {
       for (i = 0; i < mDimension.width; i++) {
         for (j = 0; j < mDimension.height; j++) {
         	R = (mCouleurs[i][j]>>16)&0x00FF;
@@ -316,7 +309,6 @@ public class CPainting extends Canvas implements MouseListener {
         	pGraphics.fillRect(i, j, 1, 1);
         }
       }
-    }
   }
 
   /******************************************************************************
@@ -329,7 +321,7 @@ public class CPainting extends Canvas implements MouseListener {
     float R, G, B;
     int lColor;
 
-    synchronized (mMutexCouleurs) {
+
       if (!mSuspendu) {
         // on colorie la case sur laquelle se trouve la fourmi
         mGraphics.setColor(new Color(c));
@@ -436,7 +428,6 @@ public class CPainting extends Canvas implements MouseListener {
           }
           break;
       }// end switch
-    }
   }
 
   /******************************************************************************

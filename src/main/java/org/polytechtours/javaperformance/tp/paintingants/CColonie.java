@@ -11,7 +11,7 @@ package org.polytechtours.javaperformance.tp.paintingants;
  */
 import java.util.Vector;
 
-public class CColonie implements Runnable {
+public class CColonie{
 
   private Boolean mContinue = Boolean.TRUE;
   private Vector<CFourmi> mColonie;
@@ -27,21 +27,12 @@ public class CColonie implements Runnable {
     mContinue = false;
   }
 
-  @Override
   public void run() {
-
-    while (mContinue == true) {
       if (!mApplis.getPause()) {
         for (int i = 0; i < mColonie.size(); i++) {
           mColonie.get(i).deplacer();
           mApplis.compteur();
         }
-      } else {
-        /*
-         * try { Thread.sleep(100); } catch (InterruptedException e) { break; }
-         */
-
-      }
     }
   }
 
